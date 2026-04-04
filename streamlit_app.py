@@ -16,14 +16,14 @@ stress = st.slider("Stress Index (1-10)", 1, 10, 2)
 
 # 3. Prediction Logic (Triggered by Button)
 if st.button("Predict Dropout Status"):
-    # We define the array with 'Safe' background values (0 failures, high income)
+    # We use 'Safe' background values to allow a "Stay" prediction
     input_data = np.array([
         22.4, 1.0, 0.7, 0.8, 3.5,  # Age, Gender, Eth, Edu, Income
         gpa,                       # User Input
         attendance,                # User Input
         0.6, 0.4, 1.2,             # Extra, Job, Self-study
         study_hours,               # User Input
-        0.0,                       # <--- CHANGED: Set failures to 0.0 to allow "Stay" results
+        0.0,                       # <--- FIX: History of Failures set to 0
         0.8, 0.7,                  # Scholarship, Internet
         stress,                    # User Input
         1.1, 0.6                   # Lowered Financial Stress
