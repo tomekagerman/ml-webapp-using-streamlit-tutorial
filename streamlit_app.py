@@ -9,26 +9,27 @@ st.title("🎓 Student Dropout Predictor")
 st.write("Enter student metrics below to predict enrollment status.")
 
 # 2. User Input Widgets
-gpa = st.number_input("Cumulative GPA", 0.0, 4.0, 3.0)
-attendance = st.slider("Attendance Percentage", 0, 100, 85)
-study_hours = st.number_input("Weekly Study Hours", 0, 100, 10)
-stress = st.slider("Stress Index (1-10)", 1, 10, 5)
+gpa = st.number_input("Cumulative GPA", 0.0, 4.0, 3.9)
+attendance = st.slider("Attendance Percentage", 0, 100, 95)
+study_hours = st.number_input("Weekly Study Hours", 0, 100, 15)
+stress = st.slider("Stress Index (1-10)", 1, 10, 2)
 
 # 3. Prediction Logic (Triggered by Button)
 if st.button("Predict Dropout Status"):
-    # We define the array ONLY when the button is pressed
+    # We define the array with 'Safe' background values (0 failures, high income)
     input_data = np.array([
-        22.4, 1.0, 0.7, 0.8, 2.5,  # Hidden averages
-        gpa,                       # Your GPA input
-        attendance,                # Your Attendance input
-        0.6, 0.4, 1.2,             # Hidden averages
-        study_hours,               # Your Study Hours input
-        4.5, 0.8, 0.7,             # Hidden averages
-        stress,                    # Your Stress input
-        2.1, 0.6                   # Hidden averages
+        22.4, 1.0, 0.7, 0.8, 3.5,  # Age, Gender, Eth, Edu, Income
+        gpa,                       # User Input
+        attendance,                # User Input
+        0.6, 0.4, 1.2,             # Extra, Job, Self-study
+        study_hours,               # User Input
+        0.0,                       # <--- CHANGED: Set failures to 0.0 to allow "Stay" results
+        0.8, 0.7,                  # Scholarship, Internet
+        stress,                    # User Input
+        1.1, 0.6                   # Lowered Financial Stress
     ])
     
-    # Reshape and Predict
+    # Predict
     prediction = model.predict([input_data])
     
     # 4. Display Results
