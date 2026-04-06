@@ -9,7 +9,7 @@ with open('model.pkl', 'rb') as f:
 st.title("🎓 Student Dropout Predictor")
 
 # 4 Inputs
-input_data = np.array([
+input_data = pd.DataFrame([
         22.4,   # Age
         1.0,    # Gender
         0.7,    # Ethnicity
