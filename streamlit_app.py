@@ -35,20 +35,14 @@ input_data = pd.DataFrame([
     input_data[14] = stress
 
 if st.button("Predict Status"):
-    # Create input dataframe
+    # Everything below this line must be indented exactly 4 spaces
     input_data = pd.DataFrame([[study_hours, stress, attendance, gpa]], 
                             columns=['Study_Hours_per_Day', 'Stress_Index', 'Attendance_Rate', 'GPA'])
     
-    # Get prediction and the probability
     prediction = model.predict(input_data)[0]
-    proba = model.predict_proba(input_data)[0] # Shows how confident the model is
     
     st.divider()
-
-    # SWAPPED LOGIC: 
     if prediction == 0:
-        st.success(f"### Result: Likely to Stay")
-        st.info(f"Confidence: {proba[0]*100:.1f}%")
+        st.success("### Result: Likely to Stay")
     else:
-        st.error(f"### Result: High Risk of Dropout")
-        st.info(f"Confidence: {proba[1]*100:.1f}%")
+        st.error("### Result: High Risk of Dropout")
