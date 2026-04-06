@@ -1,64 +1,32 @@
 import streamlit as st
 import pandas as pd
 import pickle
+import numpy as np
 
-# Load the model
-try:
-    with open('model.pkl', 'rb') as f:
-        model = pickle.load(f)
-except Exception as e:
-    st.error("Model file (model.pkl) not found. Please run 'python3 train_model.py' in the terminal.")
+# 1. Load the trained model
+model = pickle.load(open('model.pkl', 'rb'))
 
 st.title("🎓 Student Dropout Predictor")
 
-# UI Inputs for the 4 features you want to control
-gpa = st.number_input("Cumulative GPA", 0.0, 4.0, 3.5)
-attendance = st.slider("Attendance Rate (%)", 0, 100, 95)
-study_hours = st.number_input("Daily Study Hours", 0.0, 24.0, 6.0)
-stress = st.slider("Stress Level (1-10)", 1, 10, 2)
+# 2. Create Inputs
+gpa = st.number_input("Cumulative GPA", 0.0, 4.0, 3.0)
+attendance = st.slider("Attendance %", 0, 100, 85)
+study_hours = st.number_input("Weekly Study Hours", 0, 100, 10)
+stress = st.slider("Stress Index (1-10)", 1, 10, 5)
 
-if st.button("Predict Status"):
-    # This dictionary uses the EXACT capitalized names the model expects
-    data = {
-        'Attendance_Rate': [attendance],
-        'GPA': [gpa],
-        'Stress_Index': [stress],
-        'Study_Hours_per_Day': [study_hours],
-        'Assignment_Delay_Days': [1],
-        'CGPA': [gpa],
-        'Department': [1],
-        'Family_Income': [25000],
-        'Internet_Access': [1],
-        'Age': [20],
-        'Gender': [0],
-        'Parental_Education': [2],
-        'Part_Time_Job': [0],
-        'Scholarship': [0],
-        'Travel_Time_Minutes': [30],
-        'Semester': [2],
-        'Semester_GPA': [gpa]
-    }
+# 3. Prediction Logic with Averages
+if st.button("Predict Dropout Status"):
+    input_data = np.array([
+        22.4, 1.0, 0.7, 0.8, 2.5,  # Hidden averages
+        gpa, attendance,           # User inputs
+        0.6, 0.4, 1.2, study_hours, 
+        4.5, 0.8, 0.7, stress, 
+        2.1, 0.6
+    ])
     
-    input_df = pd.DataFrame(data)
+    prediction = model.predict([input_data])
     
-    # CRITICAL: The features MUST be in this exact order to match the model
-    expected_order = [
-        'Attendance_Rate', 'GPA', 'Stress_Index', 'Study_Hours_per_Day',
-        'Assignment_Delay_Days', 'CGPA', 'Department', 'Family_Income', 
-        'Internet_Access', 'Age', 'Gender', 'Parental_Education', 
-        'Part_Time_Job', 'Scholarship', 'Travel_Time_Minutes', 
-        'Semester', 'Semester_GPA'
-    ]
-    
-    input_df = input_df[expected_order]
-    
-    # Perform prediction
-    prediction = model.predict(input_df)[0]
-    
-    st.divider()
-    
-    # Standard Encoding: 0 is Stay, 1 is Dropout
-    if prediction == 0:
-        st.success("### Result: Likely to Stay")
+    if prediction[0] == 1:
+        st.error("### Result: Likely to Dropout")
     else:
-        st.error("### Result: High Risk of Dropout")
+        st.success("### Result: Likely to Stay")
