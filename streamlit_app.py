@@ -2,46 +2,49 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-# Load the model
+# 1. Load the model
 with open('model.pkl', 'rb') as f:
     model = pickle.load(f)
 
 st.title("🎓 Student Dropout Predictor")
 
-# 4 Inputs
-input_data = pd.DataFrame([
-        22.4,   # Age
-        1.0,    # Gender
-        0.7,    # Ethnicity
-        0.8,    # Parental Education
-        2.5,    # Family Income
-        gpa,    # Your GPA input
-        attendance, # Your Attendance input
-        0.6,    # Extracurriculars
-        0.4,    # Part-time Job
-        1.2,    # Self-study hours
-        study_hours, # Your Study Hours input
-        4.5,    # History of Failures
-        0.8,    # Scholarship
-        0.7,    # Internet Access
-        stress, # Your Stress Index input
-        2.1,    # Financial Stress
-        0.6     # Peer Influence
-    ])
-    # Mapping to the correct columns (approximate based on standard dataset order)
-    input_data[5] = gpa           # High importance
-    input_data[6] = attendance    # High importance
-    input_data[10] = study_hours
-    input_data[14] = stress
+# 2. Setup the 4 Inputs
+gpa = st.number_input("Cumulative GPA", 0.0, 4.0, 3.5)
+attendance = st.slider("Attendance Rate (%)", 0, 100, 95)
+study_hours = st.number_input("Daily Study Hours", 0.0, 24.0, 6.0)
+stress = st.slider("Stress Level (1-10)", 1, 10, 2)
 
+# 3. Prediction Logic
 if st.button("Predict Status"):
-    # Everything below this line must be indented exactly 4 spaces
-    input_data = pd.DataFrame([[study_hours, stress, attendance, gpa]], 
-                            columns=['Study_Hours_per_Day', 'Stress_Index', 'Attendance_Rate', 'GPA'])
+    # Create a dictionary with ALL columns the model expects (17 total)
+    # Use inputs for the first 4, and 'safe' averages for the rest
+    data = {
+        'Study_Hours_per_Day': [study_hours],
+        'Stress_Index': [stress],
+        'Attendance_Rate': [attendance],
+        'GPA': [gpa],
+        'Age': [20],                   # Average age
+        'Gender': [0],                 # Neutral
+        'Family_Income': [25000],      # Average income
+        'Internet_Access': [1],        # Assume they have it
+        'Assignment_Delay_Days': [1],  # Low delay
+        'Travel_Time_Minutes': [30],   # Average commute
+        'Part_Time_Job': [0],          # No job
+        'Scholarship': [0],            # No scholarship
+        'Semester_GPA': [gpa],         # Match their current GPA
+        'CGPA': [gpa],                 # Match their current GPA
+        'Semester': [2],               # Mid-program
+        'Department': [1],             # General dept
+        'Parental_Education': [2]      # Average level
+    }
     
-    prediction = model.predict(input_data)[0]
+    input_df = pd.DataFrame(data)
+    
+    # Get the prediction
+    prediction = model.predict(input_df)[0]
     
     st.divider()
+    # Logic: 0 is Stay, 1 is Dropout
     if prediction == 0:
         st.success("### Result: Likely to Stay")
     else:
