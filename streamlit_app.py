@@ -32,18 +32,12 @@ with col2:
 
 # 4. Logic for Prediction
 if st.button("Predict Result"):
-    # Replicating the 17-feature array logic from Flask code
-    input_data = np.array([
-        22.4, 1.0, 0.7, 0.8, 2.5,  # Defaults (Age, Gender, etc.)
-        gpa, attendance,           # Your inputs
-        0.6, 0.4, 1.2,             # Defaults
-        study_hours,               # Your input
-        4.5, 0.8, 0.7,             # Defaults
-        stress,                    # Your input
-        2.1, 0.6                   # Defaults
-    ])
+    # Create an array with ONLY the 4 features your model expects
+    # Ensure the order matches exactly how you trained the model
+    input_data = np.array([[gpa, attendance, study_hours, stress]])
 
-    prediction = model.predict([input_data])
+    # Make the prediction
+    prediction = model.predict(input_data)
     
     # Display Result
     if prediction[0] == 1:
