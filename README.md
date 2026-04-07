@@ -1,5 +1,8 @@
 <!-- hide -->
 # Integration of a ML model in Render using Streamlit - Step by step guide
+## 🚀 Live Demo
+
+You can access the live web application here: [Student Dropout Predictor](https://student-dropout-predictor-v2.onrender.com)
 <!-- endhide -->
 
 - Find and understand a new dataset or use the model from the previous project.
