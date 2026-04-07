@@ -32,30 +32,9 @@ with col2:
 
 # 4. Logic for Prediction
 if st.button("Predict Result"):
-    # Create the full 17-feature array using "Neutral" averages
-    # This matches the structure your model was trained on
-    input_data = np.array([
-        22.4,        # Age
-        1.0,         # Gender
-        0.7,         # Ethnicity
-        0.8,         # Parental Education
-        2.5,         # Family Income
-        gpa,         # <--- Your GPA input
-        attendance,  # <--- Your Attendance input
-        0.6,         # Extracurriculars
-        0.4,         # Part-time Job
-        1.2,         # Self-study hours
-        study_hours, # <--- Your Study Hours input
-        4.5,         # History of Failures
-        0.8,         # Scholarship
-        0.7,         # Internet Access
-        stress,      # <--- Your Stress Index input
-        2.1,         # Financial Stress
-        0.6          # Peer Influence
-    ])
-
-    # Reshape for the model (expects a 2D array)
-    input_data = input_data.reshape(1, -1)
+    # The error says your model wants exactly 4 features.
+    # We must pass them in the SAME order they were trained (GPA, Attendance, Study Hours, Stress).
+    input_data = np.array([[gpa, attendance, study_hours, stress]])
 
     # Make the prediction
     prediction = model.predict(input_data)
