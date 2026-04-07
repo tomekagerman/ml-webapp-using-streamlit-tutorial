@@ -3,62 +3,52 @@ import pandas as pd
 import pickle
 import numpy as np
 
-# Load the model
-try:
-    with open('model.pkl', 'rb') as f:
-        model = pickle.load(f)
-except Exception as e:
-    st.error("Model file not found. Run 'python3 train_model.py' first.")
+# 1. Load the trained model
+@st.cache_resource # This keeps the model in memory for faster performance
+def load_model():
+    return pickle.load(open('model.pkl', 'rb'))
 
-st.title("🎓 Student Dropout Predictor")
+model = load_model()
 
-# UI Inputs (The 4 to control)
-gpa = st.number_input("Cumulative GPA", 0.0, 4.0, 3.0)
-attendance = st.slider("Attendance %", 0, 100, 85)
-study_hours = st.number_input("Weekly Study Hours", 0.0, 168.0, 10.0)
-stress = st.slider("Stress Index (1-10)", 1, 10, 5)
+# 2. Set up the Page UI
+st.set_page_config(page_title="Student Dropout Predictor", layout="centered")
 
-if st.button("Predict Dropout Status"):
-    # We must provide ALL 17 features that the model was trained on
-    # Capitalization must match the error log exactly (Age, Attendance_Rate, etc.)
-    data = {
-        'Attendance_Rate': [attendance],
-        'GPA': [gpa],
-        'Stress_Index': [stress],
-        'Study_Hours_per_Day': [study_hours / 7], # Converting weekly to daily
-        'Assignment_Delay_Days': [0],
-        'CGPA': [gpa],
-        'Department': [1],
-        'Family_Income': [30000],
-        'Internet_Access': [1],
-        'Age': [20],
-        'Gender': [0],
-        'Parental_Education': [2],
-        'Part_Time_Job': [0],
-        'Scholarship': [0],
-        'Travel_Time_Minutes': [30],
-        'Semester': [1],
-        'Semester_GPA': [gpa]
-    }
+st.title("🎓 Student Success Predictor")
+st.markdown("""
+This app predicts whether a student is likely to **Stay** or **Dropout** based on academic and personal factors.
+---
+""")
+
+# 3. Create Input Fields (Replacing the HTML Form)
+col1, col2 = st.columns(2)
+
+with col1:
+    gpa = st.number_input("Current GPA", min_value=0.0, max_value=4.0, value=3.0, step=0.1)
+    attendance = st.number_input("Attendance (%)", min_value=0.0, max_value=100.0, value=85.0)
+
+with col2:
+    study_hours = st.number_input("Weekly Study Hours", min_value=0, max_value=100, value=15)
+    stress = st.slider("Stress Level (1-10)", 1, 10, 5)
+
+# 4. Logic for Prediction
+if st.button("Predict Result"):
+    # Replicating the 17-feature array logic from Flask code
+    input_data = np.array([
+        22.4, 1.0, 0.7, 0.8, 2.5,  # Defaults (Age, Gender, etc.)
+        gpa, attendance,           # Your inputs
+        0.6, 0.4, 1.2,             # Defaults
+        study_hours,               # Your input
+        4.5, 0.8, 0.7,             # Defaults
+        stress,                    # Your input
+        2.1, 0.6                   # Defaults
+    ])
+
+    prediction = model.predict([input_data])
     
-    input_df = pd.DataFrame(data)
-    
-    # Order the columns exactly how the model expects them
-    expected_columns = [
-        'Attendance_Rate', 'GPA', 'Stress_Index', 'Study_Hours_per_Day',
-        'Assignment_Delay_Days', 'CGPA', 'Department', 'Family_Income', 
-        'Internet_Access', 'Age', 'Gender', 'Parental_Education', 
-        'Part_Time_Job', 'Scholarship', 'Travel_Time_Minutes', 
-        'Semester', 'Semester_GPA'
-    ]
-    input_df = input_df[expected_columns]
-    
-    # Run prediction
-    prediction = model.predict(input_df)[0]
-    
-    st.divider()
-    # 0 = Likely to Stay, 1 = High Risk (Standard dataset encoding)
-    if prediction == 0:
-        st.success("### Result: Likely to Stay")
+    # Display Result
+    if prediction[0] == 1:
+        st.error("### Result: Likely to Dropout")
     else:
-        st.error("### Result: High Risk of Dropout")
+        st.success("### Result: Likely to Stay")
+
+st.info("Note: This model uses neutral averages for features not collected in this form.")
