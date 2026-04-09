@@ -24,7 +24,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     GPA = st.number_input("Current GPA", min_value=0.0, max_value=4.0, value=3.0, step=0.1)
-    attendance = st.number_input("Attendance (%)", min_value=0.0, max_value=100.0, value=85.0)
+    Attendance_Rate = st.number_input("Attendance (%)", min_value=0.0, max_value=100.0, value=85.0)
 
 with col2:
     Study_Hours_per_Day = st.number_input("Weekly Study Hours", min_value=0, max_value=100, value=15)
