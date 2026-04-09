@@ -23,21 +23,21 @@ This app predicts whether a student is likely to **Stay** or **Dropout** based o
 col1, col2 = st.columns(2)
 
 with col1:
-    gpa = st.number_input("Current GPA", min_value=0.0, max_value=4.0, value=3.0, step=0.1)
+    GPA = st.number_input("Current GPA", min_value=0.0, max_value=4.0, value=3.0, step=0.1)
     attendance = st.number_input("Attendance (%)", min_value=0.0, max_value=100.0, value=85.0)
 
 with col2:
-    study_hours = st.number_input("Weekly Study Hours", min_value=0, max_value=100, value=15)
-    stress = st.slider("Stress Level (1-10)", 1, 10, 5)
+    Study_Hours_per_Day = st.number_input("Weekly Study Hours", min_value=0, max_value=100, value=15)
+    Stress_Index = st.slider("Stress Level (1-10)", 1, 10, 5)
 
 # 4. Logic for Prediction
 if st.button("Predict Result"):
     # The error says your model wants exactly 4 features.
     # We must pass them in the SAME order they were trained (GPA, Attendance, Study Hours, Stress).
-    input_data = np.array([[gpa, attendance, study_hours, stress]])
+    input_data = np.array([[Study_Hours_per_Day, Stress_Index, Attendance_Rate, GPA]])
 
     # Make the prediction
-    prediction = model.predict(input_data)
+    prediction = model.predict(input_features)
     
     # Display Result
     if prediction[0] == 1:
