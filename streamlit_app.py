@@ -34,7 +34,7 @@ with col2:
 if st.button("Predict Result"):
     # The error says your model wants exactly 4 features.
     # We must pass them in the SAME order they were trained (GPA, Attendance, Study Hours, Stress).
-    input_data = np.array([[Study_Hours_per_Day, Stress_Index, Attendance_Rate, GPA]])
+    input_features = np.array([[Study_Hours_per_Day, Stress_Index, Attendance_Rate, GPA]])
 
     # Make the prediction
     prediction = model.predict(input_features)
