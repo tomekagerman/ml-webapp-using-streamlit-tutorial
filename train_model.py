@@ -10,9 +10,8 @@ features = ['Study_Hours_per_Day', 'Stress_Index', 'Attendance_Rate', 'GPA']
 X = df[features]
 
 # Auto-detect Target column (0=Dropout, 1=Stay)
-target_col = 'Target' if 'Target' in df.columns else 'Dropout'
-y = df[target_col]
-
+y = df["Dropout"]
+print(y)
 # Train the model
 model = RandomForestClassifier(n_estimators=100, random_state=42)
 model.fit(X, y)
